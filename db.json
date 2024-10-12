@@ -1,0 +1,21 @@
+{
+  "users": [
+    {
+      "id": "e8bf",
+      "name": "sebbe"
+    },
+    {
+      "id": "8985",
+      "name": "alice"
+    },
+    {
+      "id": "ee3b",
+      "name": "ella",
+      "status": "pending"
+    },
+    {
+      "id": "a514",
+      "name": "wefewfewffewwrtt"
+    }
+  ]
+}
