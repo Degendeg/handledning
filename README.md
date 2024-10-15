@@ -4,3 +4,5 @@
 
 > If you're a teacher then you should rely on the 🔑 from the `.env` file. \
 > As a teacher you can set status to pending or completed for individual students.
+
+> **FYI**: `npm i -g json-server` to install globally. Add a `db.json` with the structure from `db.example.json`.
