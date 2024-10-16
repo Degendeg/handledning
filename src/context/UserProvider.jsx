@@ -10,22 +10,18 @@ export const UserProvider = ({ children }) => {
     type: '',
     color: ''
   });
-  const [isLoading, setIsLoading] = useState(true);
   const [users, setUsers] = useState([]);
   const [name, setName] = useState('');
   const [teacherKey] = useState(localStorage.getItem('teacher_key'));
   const API_URL = import.meta.env.VITE_API_URL + import.meta.env.VITE_USERS_URI;
 
   const fetchUsers = async () => {
-    setIsLoading(true);
     try {
       const response = await fetch(API_URL);
       const data = await response.json();
       setUsers(data);
     } catch (error) {
       console.error('Error fetching users:', error);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -33,8 +29,7 @@ export const UserProvider = ({ children }) => {
     fetchUsers();
     const interval = setInterval(() => {
       fetchUsers();
-    }, 30000); // Poll every 30 secs
-
+    }, 10000); // Poll every 10 secs
     return () => clearInterval(interval);
   }, []);
 
@@ -51,7 +46,7 @@ export const UserProvider = ({ children }) => {
         type: 'error',
         color: 'gray',
       });
-      return;
+      return { status: 400, reason: 'Name already exists' };
     }
 
     await fetch(API_URL, {
@@ -92,7 +87,6 @@ export const UserProvider = ({ children }) => {
 
   return (
     <UserContext.Provider value={{
-      isLoading,
       users,
       addUser,
       name,

@@ -1,7 +1,9 @@
-import React, { useContext, useEffect } from 'react';
-import { UserContext } from '../context/UserProvider';
-import Alert from './Alert';
+import React, { useContext } from 'react';
+import { UserContext } from '../../context/UserProvider';
+import Alert from '../Alert';
 import { motion, AnimatePresence } from 'framer-motion';
+import UserRemovalCell from './UserRemovalCell';
+import UserStatusCell from './UserStatusCell';
 
 const UserList = () => {
   const {
@@ -16,17 +18,18 @@ const UserList = () => {
     clearAlert
   } = useContext(UserContext);
 
-  useEffect(() => {
-    if (alert.show) {
-      const timer = setTimeout(() => clearAlert(), 5000);
-      return () => clearTimeout(timer);
-    }
-  }, [alert, clearAlert]);
-
-  const handleAddUser = () => {
-    if (name.trim() && name.length < 17) {
-      addUser(name);
-      setName('');
+  const handleAddUser = async () => {
+    try {
+      if (name.trim() && name.length < 17) {
+        const res = await addUser(name);
+        if (res && res.status === 400) {
+          setTimeout(() => clearAlert(), 3000);
+          return;
+        }
+        setName('');
+      }
+    } catch (error) {
+      console.error(error.message);
     }
   };
 
@@ -96,38 +99,8 @@ const UserList = () => {
                           <span className="font-bold">{index + 1}&#41;</span> {user.name}
                         </span>
                       </td>
-                      <td className="w-2/5 text-right py-3 px-4">
-                        {user.status === 'pending' ? (
-                          <span className="dot-flashing"></span>
-                        ) : user.status === 'completed' ? (
-                          <span>✅</span>
-                        ) : null}
-                      </td>
-                      {teacherKey === import.meta.env.VITE_TEACHER_KEY ? (
-                        <td className="text-right py-3 px-4">
-                          <button
-                            className="btn btn-circle btn-outline btn-xs align-bottom"
-                            onClick={() => deleteUser(user.id)}
-                          >
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              className="h-4 w-4"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M6 18L18 6M6 6l12 12"
-                              />
-                            </svg>
-                          </button>
-                        </td>
-                      ) : (
-                        <td className="text-right py-3 px-4"></td>
-                      )}
+                      <UserStatusCell status={user.status} />
+                      <UserRemovalCell {...{ teacherKey, deleteUser, user }} />
                     </motion.tr>
                   ))}
                 </AnimatePresence>
